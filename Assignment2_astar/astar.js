@@ -22,7 +22,7 @@ Each of the three p
 
 
 // used python script to create array (ref zip file)
-samfArray = samfArr1;
+samfArray = samfArr3;
 
 var rows = samfArray.length;
 var cols = samfArray[0].length;
@@ -37,7 +37,7 @@ var nodeHeight ;
 // nodes that have been visited but not expanded
 var openSet = [];
 
-// noed that have been visited and expanded
+// nodes that have been visited and expanded
 var closedSet = [];
 
 // current path from start to current node being evaluated
@@ -81,11 +81,6 @@ function Node(x,y ) {
     this.show = function (color) {
         fill(color);
         rect(this.x * nodeWidth, this.y *nodeHeight, nodeWidth , nodeHeight );
-
-    // Optional to add random walls
-    /*if (random(0,1) < 0.1) {
-        this.wall = true;
-    }*/
     }
 }
 
@@ -141,7 +136,11 @@ function setup() {
 
     // Task 2:
     // shortest path from Strossa to Selskapssiden
-    start = grid[31][40], goal = grid[5][8]
+    // start = grid[31][40], goal = grid[5][8]
+
+    // Task 3 and 4:
+    // least cost path from Lyche to Klubben
+    start = grid[32][28], goal = grid[32][6]
 
     // ###################################################//
     // ----      END INPUT SPACE               -----------//
