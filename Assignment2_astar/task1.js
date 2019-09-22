@@ -3,9 +3,6 @@ TDT4136 Introduction to Artificial Intelligence
 Assignment 2 – Applying the A* Algorithm
 Purpose: Gain hands-on experience with best-first search using the A* algorithm
 
-Uses the p5 js library for visualization.
-
-Open the browser console to get the cost of path.
 
 1Overview:
 In this assignment, you will become familiar with the A* algorithm by applying it to a classical use case
@@ -22,7 +19,7 @@ Each of the three p
 
 
 // used python script to create array (ref zip file)
-samfArray = samfArr1;
+samfArray = samfArr3;
 
 var rows = samfArray.length;
 var cols = samfArray[0].length;
@@ -136,12 +133,12 @@ function setup() {
 
     // Task 1:
     // shortest path from Rundhallen (your location) to Strossa
-     //start = grid[18][27], goal = grid[31][40]
+    //start = grid[18][27], goal = grid[31][40]
    
 
     // Task 2:
     // shortest path from Strossa to Selskapssiden
-    start = grid[31][40], goal = grid[5][8]
+    start = grid[31][40], goal = grid[4][8]
 
     // ###################################################//
     // ----      END INPUT SPACE               -----------//
@@ -206,94 +203,126 @@ function draw() {
             if (!closedSet.includes(neighbor) && neighbor.wall != true) {
                 // d is weight of edge from current to neighbor
                 var d = neighbor.weight;
-
-                // string to int
                 d = parseInt(d,10)
-                     
+                // bool for better path
+                console.log(d)
+
+
+                var newPath = false;
+                //var d = 1
                 // tentativ_gScore is distance from start 
                 // to neighbor through current
                 var tentativ_gScore = current.g + d  ; 
+                console.log(tentativ_gScore)
+
+                /*
+                if (tentativ_gScore < neighbor.g) {
+                    
+                    // updates new g and f scores
+                    newPath = true ;
+                    neighbor.f = tentativ_gScore + heuristic(neighbor,goal,1);
+                }
+                else {
+                    neighbor.g = current.g + d ; 
+                    neighbor.h = heuristic(neighbor);
+                    neighbor.f = neighbor.g + neighbor.h
+                    newPath = true ; 
+                }
+
+                if (newPath) {
+                    neighbor.cameFrom = current ;
+                }
+                */
+                
+                
 
                 if (tentativ_gScore < neighbor.g) {
                     // adds neighbor to path
                     neighbor.cameFrom = current ; 
 
-                    // updates new g, h and f scores
+                    // updates new g and f scores
                     neighbor.g = tentativ_gScore;
                     neighbor.h = heuristic(neighbor,goal)
                     neighbor.f = tentativ_gScore + heuristic(neighbor,goal,1);
                     if (!openSet.includes(neighbor)) {
                         openSet.push(neighbor);
                     }
-                }      
-            }          
+                }
+
+                /*if (openSet.includes(neighbor)) {
+                    // checks if path to neighbor is lower
+                    if (tentativ_gScore < neighbor.g) {
+                        neighbor.g = tentativ_gScore ;  
+                           
+                    }
+                }
+                else {
+                    neighbor.g = tentativ_gScore;
+                    openSet.push(neighbor);
+                }*/
+                /*
+                neighbor.cameFrom = current;  
+                neighbor.h = heuristic(neighbor,goal,1);
+                neighbor.f = neighbor.g + neighbor.h ;  */
+                       
+            }
+            
         }    
     } 
     else {
         console.log("NO SOLUTION")
     }
+    
 
-    initGrid()
-    drawingPaths()
-}
+    // createes a black background
+    background(0)
 
-// ------- functions ------------------
+    // creates the canvas grid
+    for (var i = 0; i < cols; i++) {
+        for (var j = 0; j<rows; j++) {
 
-//creates grid and sets weights from samf array
-function initGrid() {
+            // sets walls and draws them black
+            if (samfArray[j][i] == -1 ) {
+                grid[i][j].wall = true ;
+                grid[i][j].show(color(0))
+            }
 
-  // createes a black background
-  background(0)
+            // sets white color to non wall and weight parameter
+            else {
+                grid[i][j].weight = samfArray[j][i]
+                // sets light pink to nodes with weight 2
+                if (samfArray[j][i] == 2 ) {
+                    grid[i][j].show(color(255,182,193))
+                }
+                // sets  pink to nodes with weight 3
+                else if ((samfArray[j][i] == 3 )) {
+                    grid[i][j].show(color(255,105,180))
+                }
+                // sets dark pink to nodes with weight 4
+                else if ((samfArray[j][i] == 4 )) {
+                    grid[i][j].show(color(199,21,133))
+                }
+                else {
+                // sets white to nodes with weight 1
+                grid[i][j].show(color(255))
+                }
+            }
+        }
+    }
 
-  // creates the canvas grid
-  for (var i = 0; i < cols; i++) {
-      for (var j = 0; j<rows; j++) {
-
-          // sets walls and draws them black
-          if (samfArray[j][i] == -1 ) {
-              grid[i][j].wall = true ;
-              grid[i][j].show(color(0))
-          }
-
-          // sets white color to non wall and weight parameter
-          else {
-              grid[i][j].weight = samfArray[j][i]
-              // sets light pink to nodes with weight 2
-              if (samfArray[j][i] == 2 ) {
-                  grid[i][j].show(color(255,182,193))
-              }
-              // sets pink to nodes with weight 3
-              else if ((samfArray[j][i] == 3 )) {
-                  grid[i][j].show(color(255,105,180))
-              }
-              // sets dark pink to nodes with weight 4
-              else if ((samfArray[j][i] == 4 )) {
-                  grid[i][j].show(color(199,21,133))
-              }
-              else {
-              // sets white to nodes with weight 1
-              grid[i][j].show(color(255))
-              }
-          }
-      }
-  }
-
-}
-
-// draws final path, explored and closed nodes
-function drawingPaths() {
     // nodes added to the openSet are drawn yellow 
     for (var i = 0; i < openSet.length; i++) {
-      openSet[i].show(color(255,255,0))
-  } 
+        openSet[i].show(color(255,255,0))
+    } 
 
-  // nodes added to the closedSet are drawn gray
-  for (var i = 0; i < closedSet.length; i++) {
-      closedSet[i].show(color(119,136,153))
-  } 
-
-  // shortest path drawn green
-  for (var i = 0; i < path.length; i++) {
-      path[i].show(color(0,255,0));
-  }  
+    // nodes added to the closedSet are drawn gray
+    for (var i = 0; i < closedSet.length; i++) {
+        closedSet[i].show(color(119,136,153))
+    } 
+    
+    // shortest path drawn green
+    for (var i = 0; i < path.length; i++) {
+        path[i].show(color(0,255,0));
+    }  
 }
+
