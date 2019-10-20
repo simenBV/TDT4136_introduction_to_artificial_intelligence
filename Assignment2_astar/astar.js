@@ -32,7 +32,7 @@ var width = 1000;
 var height = 500;
 let nodeWidth;
 let nodeHeight;
-var fr = 100;
+var fr = 10;
 
 // nodes that have been visited but not expanded
 var openSet = [];
@@ -61,10 +61,6 @@ function removeArr(array, node) {
         }
     }
 }
-
-
-
-
 
 
 // node class
@@ -156,8 +152,6 @@ function setup() {
 
 
 }
-
-
 
 // draws the table using the p5.js libary
 // using draw as whileloop

@@ -1,6 +1,16 @@
 import copy
 import itertools
 
+import sys
+
+# the setrecursionlimit function is
+# used to modify the default recursion
+# limit set by python. Using this,
+# we can increase the recursion limit
+# to satisfy our needs
+
+# sys.setrecursionlimit(10 ** 4)
+
 
 class CSP:
     def __init__(self):
@@ -84,6 +94,13 @@ class CSP:
         # Call backtrack with the partial assignment 'assignment'
         return self.backtrack(assignment)
 
+    def assignment_is_complete(self, assignment):
+        for i in range(len(assignment.keys())):
+            if len(list(assignment.values())[i]) > 1:
+                return False
+        return True
+
+
     def backtrack(self, assignment):
         """The function 'Backtrack' from the pseudocode in the
         textbook.
@@ -108,8 +125,23 @@ class CSP:
         assignments and inferences that took place in previous
         iterations of the loop.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+        if self.assignment_is_complete(assignment):
+            return assignment
+        var = self.select_unassigned_variable(assignment)
+        for value in (assignment[var]):
+            copy_assignment = copy.deepcopy(assignment)
+            temp = copy_assignment[var]
+
+            copy_assignment[var] = [value]
+            inferences = self.inference(copy_assignment, self.get_all_neighboring_arcs(var))
+            if inferences:
+                result = self.backtrack(copy_assignment)
+                if result is not False:
+                    return result
+
+        return False
+
+
 
     def select_unassigned_variable(self, assignment):
         """The function 'Select-Unassigned-Variable' from the pseudocode
@@ -117,8 +149,10 @@ class CSP:
         in 'assignment' that have not yet been decided, i.e. whose list
         of legal values has a length greater than one.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+        for i in range(len(assignment.keys())):
+            variable = list(assignment.keys())[i]
+            if len(list(assignment.values())[i]) > 1:
+                return variable
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -126,8 +160,17 @@ class CSP:
         the lists of legal values for each undecided variable. 'queue'
         is the initial queue of arcs that should be visited.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+        while queue:
+            x_i, x_j = queue.pop(0)
+            if self.revise(assignment, x_i, x_j):
+                if len(assignment[x_i]) == 0:
+                    return False
+                for x_k in self.get_all_neighboring_arcs(x_i):
+                    if x_k not in self.get_all_neighboring_arcs(x_j):
+                        queue.append((x_k[0], x_i))
+
+        return True
+
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -138,8 +181,16 @@ class CSP:
         between i and j, the value should be deleted from i's list of
         legal values in 'assignment'.
         """
-        # TODO: IMPLEMENT THIS
-        pass
+        revised = False
+        for x in assignment[i]:
+            satisfy = False
+            for y in assignment[j]:
+                if (x, y) in self.constraints[i][j]:
+                    satisfy = True
+            if not satisfy:
+                assignment[i].remove(x)
+                revised = True
+        return revised
 
 
 def create_map_coloring_csp():
@@ -209,3 +260,52 @@ def print_sudoku_solution(solution):
         print("")
         if row == 2 or row == 5:
             print('------+-------+------')
+
+"""
+
+csp = create_sudoku_csp("easy.txt")
+csp.backtracking_search()
+assignment = copy.deepcopy(csp.domains)
+l  = list(assignment.keys())
+#print(assignment['0-0'])
+#print(list(assignment.values())[1])
+que = csp.get_all_arcs()
+
+bo = csp.inference(assignment, que)
+print(l)
+"""
+
+csp = create_sudoku_csp("./boards/easy.txt")
+print_sudoku_solution(csp.backtracking_search())
+
+print('------+-------+------')
+print('------+-------+------')
+
+csp = create_sudoku_csp("./boards/medium.txt")
+print_sudoku_solution(csp.backtracking_search())
+
+print('------+-------+------')
+print('------+-------+------')
+
+csp = create_sudoku_csp("./boards/hard.txt")
+print_sudoku_solution(csp.backtracking_search())
+
+print('------+-------+------')
+print('------+-------+------')
+
+csp = create_sudoku_csp("./boards/veryhard.txt")
+print_sudoku_solution(csp.backtracking_search())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
