@@ -24,6 +24,15 @@ class CSP:
         # the variable pair (i, j)
         self.constraints = {}
 
+        # self.backtrack_called is a int of how many times BACKTRACK function is called
+        self.backtrack_called = 0
+
+        # self.backtrack_called is a int of the number of times BACKTRACK function returned failure
+        self.backtrack_called_failure = 0
+
+
+
+
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
         and 'domain' is a list of the legal values for the variable.
@@ -125,7 +134,12 @@ class CSP:
         assignments and inferences that took place in previous
         iterations of the loop.
         """
+        self.backtrack_called += 1
+
         if self.assignment_is_complete(assignment):
+
+            print('The number of times BACKTRACK function was called: ', self.backtrack_called)
+            print('the number of times BACKTRACK function returned failure: ', self.backtrack_called_failure)
             return assignment
         var = self.select_unassigned_variable(assignment)
         for value in (assignment[var]):
@@ -139,6 +153,7 @@ class CSP:
                 if result is not False:
                     return result
 
+        self.backtrack_called_failure +=1
         return False
 
 
@@ -275,23 +290,26 @@ bo = csp.inference(assignment, que)
 print(l)
 """
 
+print('#####################')
+print('---------EASY--------')
+
 csp = create_sudoku_csp("./boards/easy.txt")
 print_sudoku_solution(csp.backtracking_search())
 
-print('------+-------+------')
-print('------+-------+------')
+print('#####################')
+print('---------MEDIUM------')
 
 csp = create_sudoku_csp("./boards/medium.txt")
 print_sudoku_solution(csp.backtracking_search())
 
-print('------+-------+------')
-print('------+-------+------')
+print('#####################')
+print('---------HARD--------')
 
 csp = create_sudoku_csp("./boards/hard.txt")
 print_sudoku_solution(csp.backtracking_search())
 
-print('------+-------+------')
-print('------+-------+------')
+print('#####################')
+print('-------VERYHARD------')
 
 csp = create_sudoku_csp("./boards/veryhard.txt")
 print_sudoku_solution(csp.backtracking_search())
