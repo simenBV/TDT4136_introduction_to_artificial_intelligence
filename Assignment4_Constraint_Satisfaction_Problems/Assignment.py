@@ -1,16 +1,6 @@
 import copy
 import itertools
 
-import sys
-
-# the setrecursionlimit function is
-# used to modify the default recursion
-# limit set by python. Using this,
-# we can increase the recursion limit
-# to satisfy our needs
-
-# sys.setrecursionlimit(10 ** 4)
-
 
 class CSP:
     def __init__(self):
@@ -29,9 +19,6 @@ class CSP:
 
         # self.backtrack_called is a int of the number of times BACKTRACK function returned failure
         self.backtrack_called_failure = 0
-
-
-
 
     def add_variable(self, name, domain):
         """Add a new variable to the CSP. 'name' is the variable name
@@ -136,18 +123,30 @@ class CSP:
         """
         self.backtrack_called += 1
 
+        # if have a solution, return it
         if self.assignment_is_complete(assignment):
             print('The number of times BACKTRACK function was called: ', self.backtrack_called)
             print('the number of times BACKTRACK function returned failure: ', self.backtrack_called_failure)
             return assignment
-        var = self.select_unassigned_variable(assignment)
-        for value in (assignment[var]):
-            copy_assignment = copy.deepcopy(assignment)
-            temp = copy_assignment[var]
 
-            copy_assignment[var] = [value]
-            inferences = self.inference(copy_assignment, self.get_all_neighboring_arcs(var))
-            if inferences:
+        # var = first unassigned variable in assignment
+        var = self.select_unassigned_variable(assignment)
+
+        # iterates all values in the domain of var
+        for value in (assignment[var]):
+            # The deep copy is to ensure that any changes made to 'assignment'
+            # does not have any side effects elsewhere.
+            copy_assignment = copy.deepcopy(assignment)
+
+            # assign the value under consideration to var
+            copy_assignment[var] = value
+
+            # makes the partial assignment under consideration arc consistent
+            # if false, we have no consistent solution, return failure
+            if self.inference(copy_assignment, self.get_all_neighboring_arcs(var)):
+
+                # partial assignment is consistent with solution
+                # evaluate further unassigned variables
                 result = self.backtrack(copy_assignment)
                 if result is not False:
                     return result
@@ -163,8 +162,12 @@ class CSP:
         in 'assignment' that have not yet been decided, i.e. whose list
         of legal values has a length greater than one.
         """
+        # iterate all variable
         for i in range(len(assignment.keys())):
+            # variable under consideration
             variable = list(assignment.keys())[i]
+
+            # if the value of variable is not decided, return variable
             if len(list(assignment.values())[i]) > 1:
                 return variable
 
@@ -174,11 +177,19 @@ class CSP:
         the lists of legal values for each undecided variable. 'queue'
         is the initial queue of arcs that should be visited.
         """
+        # while queue is not empty
         while queue:
+            # pop of first two arbitrary variables
             x_i, x_j = queue.pop(0)
+
+            # makes x_i is arc consistent with x_j
             if self.revise(assignment, x_i, x_j):
+
+                #  checks for consistent solution
                 if len(assignment[x_i]) == 0:
                     return False
+
+                # get all neigboring arc of (x_k, x_i) and add them to queue for further consideration
                 for x_k in self.get_all_neighboring_arcs(x_i):
                     if x_k not in self.get_all_neighboring_arcs(x_j):
                         queue.append((x_k[0], x_i))
@@ -196,11 +207,20 @@ class CSP:
         legal values in 'assignment'.
         """
         revised = False
-        for x in assignment[i]:
+
+        # iterates values of x_i
+        for x in (assignment[i]):
             satisfy = False
+
+            # iterates values of x_j
             for y in assignment[j]:
+
+                # check if (x_i, x_j) satisfies solution
                 if (x, y) in self.constraints[i][j]:
                     satisfy = True
+
+            # removes the value under consideration from the domain of x_i
+            # if it does not satisfy a solution
             if not satisfy:
                 assignment[i].remove(x)
                 revised = True
