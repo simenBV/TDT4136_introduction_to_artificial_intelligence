@@ -321,9 +321,20 @@ def main():
     csp = create_sudoku_csp("./boards/veryhard.txt")
     print_sudoku_solution(csp.backtracking_search())
 
+    # Supposedly the hardest sudokoboard ever according to
+    # The Telegraph (source: https://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html)
+
+    print('#####################')
+    print('-------SUPERHARD------')
+
+    csp = create_sudoku_csp("./boards/superhard.txt")
+    print_sudoku_solution(csp.backtracking_search())
+
+
 
 if __name__ == '__main__':
     main()
+
 
 
 
