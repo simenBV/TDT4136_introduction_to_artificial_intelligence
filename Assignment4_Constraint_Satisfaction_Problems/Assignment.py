@@ -130,7 +130,12 @@ class CSP:
             return assignment
 
         # var = first unassigned variable in assignment
-        var = self.select_unassigned_variable(assignment)
+        # var = self.select_unassigned_variable(assignment)
+
+        # var  = most contrained variable in assigment
+        var = self.select_MRV_variable(assignment)
+
+
 
         # iterates all values in the domain of var
         for value in (assignment[var]):
@@ -170,6 +175,35 @@ class CSP:
             # if the value of variable is not decided, return variable
             if len(list(assignment.values())[i]) > 1:
                 return variable
+
+    def select_MRV_variable(self, assignment):
+        """Modified version of the function 'Select-Unassigned-Variable' that
+        selects the variable with minimum remaining values (MRV).
+        In other words, the most constrained variable.
+        """
+
+        mrv_var = None
+        mrv_var_length = 0
+        # iterate all variable
+        for i in range(len(assignment.keys())):
+            # variable under consideration
+            variable = list(assignment.keys())[i]
+
+
+            # if the value of variable is not decided, return variable
+            if len(list(assignment.values())[i]) > 1:
+                if mrv_var is None:
+                    mrv_var = variable
+                if mrv_var_length is 0:
+                    mrv_var_length = len(assignment[mrv_var])
+
+                # check number of constraints
+                constrain_length = len(assignment[variable])
+
+                if constrain_length < mrv_var_length:
+                    mrv_var = variable
+
+        return mrv_var
 
     def inference(self, assignment, queue):
         """The function 'AC-3' from the pseudocode in the textbook.
@@ -334,6 +368,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
